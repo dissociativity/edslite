@@ -7,6 +7,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaDataSource;
+import android.media.MediaMetadataRetriever;
 import android.text.format.Formatter;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -17,10 +19,12 @@ import android.widget.TextView;
 
 import com.sovworks.eds.android.Logger;
 import com.sovworks.eds.android.R;
+import com.sovworks.eds.android.helpers.EdsMediaMetadataSource;
 import com.sovworks.eds.android.helpers.ExtendedFileInfoLoader;
 import com.sovworks.eds.android.helpers.Util;
 import com.sovworks.eds.android.service.FileOpsService;
 import com.sovworks.eds.android.settings.UserSettings;
+import com.sovworks.eds.fs.File;
 import com.sovworks.eds.fs.Path;
 import com.sovworks.eds.fs.util.StringPathUtil;
 import com.sovworks.eds.settings.GlobalConfig;
@@ -219,7 +223,12 @@ class FileRecord extends FsBrowserRecord
         Drawable res = null;
         try
         {
-            res = mime.startsWith("image/") ? getImagePreview(_path) : getDefaultAppIcon(mime);
+            if (mime.startsWith("image/"))
+                res = getImagePreview(_path);
+            else if (mime.startsWith("video/"))
+                res = getVideoPreview(_path);
+            else
+                res = getDefaultAppIcon(mime);
             _animateIcon = true;
         }
         catch (IOException e)
@@ -229,10 +238,19 @@ class FileRecord extends FsBrowserRecord
         return res;
     }
 
-    protected Drawable getImagePreview(Path path) throws IOException
+    private Drawable getImagePreview(Path path) throws IOException
     {
         Bitmap bitmap = Util.loadDownsampledImage(path, _iconWidth, _iconHeight);
         return bitmap!=null ? new BitmapDrawable(_context.getResources(), bitmap) : null;
+    }
+
+    private Drawable getVideoPreview(Path path) throws IOException {
+        MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+        MediaDataSource dataSource = new EdsMediaMetadataSource(path.getFile().getRandomAccessIO(File.AccessMode.Read));
+        metadataRetriever.setDataSource(dataSource);
+        Bitmap bitmap = metadataRetriever.getScaledFrameAtTime(0, 0, _iconWidth, _iconHeight);
+        metadataRetriever.release();
+        return bitmap != null ? new BitmapDrawable(_context.getResources(), bitmap) : null;
     }
 
     private static Drawable _fileIcon;
