@@ -145,7 +145,7 @@ public class DocumentTreeFS implements FileSystem
         @Override
         public RandomAccessIO getRandomAccessIO(File.AccessMode accessMode) throws IOException
         {
-            ParcelFileDescriptor pfd = getFileDescriptor(accessMode);
+            ParcelFileDescriptor pfd = getFileDescriptor(_context, accessMode);
             if(pfd == null)
                 throw new UnsupportedOperationException();
             return new PFDRandomAccessIO(pfd);
@@ -158,9 +158,9 @@ public class DocumentTreeFS implements FileSystem
         }
 
         @Override
-        public ParcelFileDescriptor getFileDescriptor(File.AccessMode accessMode) throws IOException
+        public ParcelFileDescriptor getFileDescriptor(Context context, File.AccessMode accessMode) throws IOException
         {
-           return _context.getContentResolver().openFileDescriptor(
+           return context.getContentResolver().openFileDescriptor(
                     _path.getDocumentUri(),
                     Util.getStringModeFromAccessMode(accessMode)
             );

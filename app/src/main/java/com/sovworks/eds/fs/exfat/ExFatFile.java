@@ -1,5 +1,6 @@
 package com.sovworks.eds.fs.exfat;
 
+import android.content.Context;
 import android.os.ParcelFileDescriptor;
 
 import com.sovworks.eds.fs.File;
@@ -89,9 +90,9 @@ class ExFatFile extends ExFatRecord implements File
     }
 
     @Override
-    public ParcelFileDescriptor getFileDescriptor(AccessMode accessMode) throws IOException
+    public ParcelFileDescriptor getFileDescriptor(Context context, AccessMode accessMode) throws IOException
     {
-        return null;
+        return Util.toParcelFileDescriptor(context, this, accessMode);
     }
 
     @Override

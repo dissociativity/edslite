@@ -142,6 +142,7 @@ public class LocationsServiceBase extends Service
 			registerReceiver(_shutdownReceiver, new IntentFilter("android.intent.action.QUICKBOOT_POWEROFF"));
 			_inactivityCheckReceiver = new InactivityCheckReceiver();
 			registerReceiver(_inactivityCheckReceiver, new IntentFilter(ACTION_CHECK_INACTIVE_LOCATION));
+			_locationsManager.initIOHandler();
         }
         catch (Exception e)
         {
@@ -189,6 +190,7 @@ public class LocationsServiceBase extends Service
 		}
 		TempFilesMonitor.getMonitor(this).stopChangesMonitor();
 		_locationsManager.closeAllLocations(true, true);
+		_locationsManager.stopIOHandler();
 		deleteMirror();
 		_settings = null;
 		_locationsManager = null;

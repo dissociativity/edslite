@@ -134,7 +134,7 @@ public abstract class MainContentProviderBase extends ContentProvider
             if(!loc.getCurrentPath().isFile() && am == File.AccessMode.Read)
                 throw new FileNotFoundException();
             final File f = loc.getCurrentPath().getFile();
-            ParcelFileDescriptor fd = f.getFileDescriptor(am);
+            ParcelFileDescriptor fd = f.getFileDescriptor(cp.getContext(), am);
             if(fd!=null)
                 return fd;
             if(am == File.AccessMode.Read || am == File.AccessMode.Write)
@@ -181,7 +181,7 @@ public abstract class MainContentProviderBase extends ContentProvider
                         );
 
             }
-            return tmpLocation.getCurrentPath().getFile().getFileDescriptor(am);
+            return tmpLocation.getCurrentPath().getFile().getFileDescriptor(cp.getContext(), am);
         }
         catch(IOException e)
         {

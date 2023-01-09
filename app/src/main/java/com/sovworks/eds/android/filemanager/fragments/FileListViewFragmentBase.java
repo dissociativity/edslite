@@ -1235,7 +1235,7 @@ public abstract class FileListViewFragmentBase extends RxFragment implements
                     false,
                     ContentResolverFs.fromSendIntent(
                             getActivity().getIntent(),
-                            getActivity().getContentResolver()
+                            getActivity()
                     )
             );
             FileOpsService.copyFiles(getActivity(), recs, false);
